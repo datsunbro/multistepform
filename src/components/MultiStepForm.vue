@@ -26,15 +26,18 @@
                 </v-row>
                 <v-row justify="center" align="center">
 
-                    <v-col cols="12" lg="6" md="6" sm="12">
+                    <v-col cols="12" lg="8" md="8" sm="12">
 
                         <v-form justify="center" align="center">
 
-                            <v-radio-group v-model="packageSelection" column>
-                                <div v-for="option in availablePackages" :key="option.id" class="mb-5">
-                                    <v-radio :label="option.description" :value="option"></v-radio>
-                                </div>
-                            </v-radio-group>
+                            <v-row>
+                                <v-col cols="12" lg="3" md="3" sm="12" v-for="option in availablePackages" :key="option.id" class="mb-5">
+                                    <div class="descript" :class="{active: packageSelection === option}">
+                                        <label :for="option.id" class="description-label">{{option.description}}</label>
+                                        <input type="radio" :name="option.id" :id="option.id" :value="option" v-model="packageSelection">
+                                    </div>
+                                </v-col>
+                            </v-row>
 
                         </v-form>
 
@@ -58,13 +61,25 @@
                 </v-row>
 
                 <v-row justify="center" align="center">
-                    <v-col cols="12" lg="4" md="4" sm="12">
+
+                    <v-col cols="12" lg="8" md="8" sm="12">
+
                         <v-form justify="center" align="center">
-                            <div v-for="option in availableExtras" :key="option.id">
-                                <v-checkbox :label="option.description" :value="option" v-model="extrasSelection"></v-checkbox>
-                            </div>
+
+                            <v-row>
+                                <v-col cols="12" lg="3" v-for="option in availableExtras" :key="option.id">
+                                    <div class="descript" :class="{active: checkIfExtraIsSelected(option)}">
+                                        <label :for="'extra'+option.id" class="description-label">{{option.description}}
+                                            <input type="checkbox" :name="'extra'+option.id" :id="'extra'+option.id" :value="option" v-model="extrasSelection">
+                                        </label>
+                                    </div>
+                                </v-col>
+                            </v-row>
+
                         </v-form>
+
                     </v-col>
+
                 </v-row>
 
                 <v-btn color="primary" @click="formstep = 3">Weiter</v-btn>
@@ -80,7 +95,7 @@
                         <v-col justify="center" align="center">
                             <h2>3. Unser Angebot für Sie</h2>
                             <div class="mt-12 mb-12 pa-12" style="font-size: 1.25em; font-weight: bolder; background: #0090D6; color: #fff">
-                                Paket L - 2000,00 bis 10000,00€
+                                <p v-if="packageSelection && extrasSelection">{{packageSelection.packageName}} <br> {{packageSelection.packagePriceMin.toFixed(2)}} bis {{ calculatePriceSpan }}</p>
                             </div>
                         </v-col>
 
@@ -92,14 +107,14 @@
                             <h3 class="mb-6">Ihre Auswahl</h3>
 
                             <div v-if="packageSelection != null">
-                                <h4>Paket:</h4>
+                                <h4>Ziel der Website:</h4>
                                 <p>{{packageSelection.description}}</p>
                             </div>
 
                             <div v-if="extrasSelection.length > 0" class="mb-5">
                                 <h4>Gewählte Zubuchoptionen:</h4>
                                 <ul v-for="extra in extrasSelection" :key="extra.id">
-                                    <li>{{extra.description}}</li>
+                                    <li>{{extra.description}} - {{extra.priceDisplayed}}</li>
                                 </ul>
                             </div>
 
@@ -185,9 +200,6 @@
     export default {
         name: "MultiStepForm",
         methods: {
-            alertSth(rowInput) {
-                alert(rowInput);
-            },
             leadInfoIsValid() {
                 if( !this.leadInfos.contactMail || !this.leadInfos.contactPhone || !this.leadInfos.practiceName || !this.leadInfos.contactName || !this.leadInfos.city ) {
                     return false;
@@ -204,41 +216,81 @@
                 availablePackages: [
                     {
                         id: 1,
+                        packageName: 'Website Paket L',
+                        packagePriceMin: 6552.00,
+                        packagePriceMax: 7781.00,
                         description: 'Ich bin gerne auf dem neuesten Stand der Technik und möchte Praxisprozesse effizienter gestalten'
                     },
                     {
                         id: 2,
+                        packageName: 'Website Paket L',
+                        packagePriceMin: 6552.00,
+                        packagePriceMax: 7781.00,
                         description: 'Ich möchte meine Patienten mit relevanten Informationen über die Praxis versorgen und Neupatienten von unseren Leistungen überzeugen'
                     },
                     {
                         id: 3,
+                        packageName: 'Website Paket L',
+                        packagePriceMin: 6552.00,
+                        packagePriceMax: 7781.00,
                         description: 'Ich möchte meine Webseite als wichtigstes Marketinginstrument nutzen und Patienten abholen, wo sie suchen'
                     },
                     {
                         id: 4,
+                        packageName: 'Website Paket M',
+                        packagePriceMin: 2865.00,
+                        packagePriceMax: 3392.00,
                         description: 'Eine Webseite gehört mittlerweile einfach zum Standardrepertoire'
                     }
                 ],
                 availableExtras: [
                     {
                         id: 1,
-                        description: 'Rechtliche und technische Absicherung'
+                        description: 'DSGVO Paket - Ihre rechtliche Absicherung (empfohlen)',
+                        price: 19.95,
+                        priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
-                        id:2,
-                        description: 'Regelmäßige Pflege der Webseite & persönliche Kundenbetreuung'
+                        id: 2,
+                        description: 'SSL Zertifikat für sichere Datenübertragung (empfohlen)',
+                        price: 9.95,
+                        priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
-                        id:3,
-                        description: 'Professionelle Praxis- und Teamfotos'
+                        id: 3,
+                        description: 'Regelmäßige Updates und Wartung Ihrer Webseite',
+                        price: 19.95,
+                        priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
-                        id:4,
-                        description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z.B. Google'
+                        id: 4,
+                        description: 'Erstellung professioneller Praxis- und Teamfotos',
+                        price: 400.00,
+                        priceDisplayed: 'einmalig 400 €'
                     },
                     {
-                        id:5,
-                        description: 'Steigerung der Patientenzufriedenheit und der Praxiseffizienz'
+                        id: 5,
+                        description: 'Inhaltspflege der Webseite und Umsetzung von Änderungswünschen mit persönlicher Kundenbetreuung',
+                        price: 39.95,
+                        priceDisplayed: 'mtl. 39.95 €'
+                    },
+                    {
+                        id: 6,
+                        description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z.B. Google',
+                        price: 9.95,
+                        priceDisplayed: 'mtl. 9.95 €'
+                    },
+                    {
+                        id: 7,
+                        description: 'Sprachassistenten optimierte Webseitenerstellung und Yelp Eintrag ',
+                        price: 9.95,
+                        priceDisplayed: 'mtl. 9.95 €'
+                    },
+                    {
+                        id: 8,
+                        description: 'Online Rezept und Online Überweisung für Ihre Patienten',
+                        price: 9.95,
+                        priceDisplayed: 'mtl. 9.95 €'
                     }
                 ],
                 leadInfos: {
@@ -256,23 +308,64 @@
                     v => !!v || 'Bitte füllen Sie dieses Feld aus!',
                     v => /.+@.+/.test(v) || 'Bitte geben Sie eine gültige E-Mailadresse an',
                 ],
-                formSendSuccessfully: false
+                formSendSuccessfully: false,
+                checkIfExtraIsSelected(option) {
+                    if( this.extrasSelection.indexOf(option) >= 0 ) {
+                        return true;
+                    }
+                }
+            }
+        },
+        computed: {
+            calculatePriceSpan() {
+
+                if(this.extrasSelection) {
+                    let maxPrice = 0;
+
+                    let extrasSum = 0;
+                    this.extrasSelection.forEach( (extra) => {
+                        extrasSum += extra.price;
+                    });
+
+                    maxPrice = (this.packageSelection.packagePriceMax+extrasSum).toFixed(2);
+
+                    return maxPrice;
+                } else {
+                    return this.packageSelection.packagePriceMax.toFixed(2);
+                }
             }
         }
     }
 </script>
 
 <style>
-    input[type="radio"] {
+    input[type="radio"], input[type="checkbox"] {
         display: none;
     }
     .descript {
+        border: 1px solid #0090D6;
+        background: #fff;
+        color: #0090D6;
+        width: 100%;
+        min-height: 150px;
+        height: 100%;
+    }
+
+    .description-label {
+        padding: 1em;
+        display: block;
+        min-height: 100%; /* for the latest browsers which support min-height */
+        height: auto !important; /* for newer IE versions */
+        height: 100%; /* the only height-related attribute that IE6 does not ignore  */
+    }
+
+    .active {
+        border: 1px solid #fff;
         background: #0090D6;
         color: #fff;
-        height: auto;
-        padding: 50px;
+        font-weight: bold;
+        width: 100%;
+        min-height: 150px;
     }
-    input[type="radio"]:checked + p.descript {
-        background: red;
-    }
+
 </style>
