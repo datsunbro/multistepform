@@ -1,5 +1,5 @@
 <template>
-    <v-stepper v-model="formstep">
+    <v-stepper id="stepper" v-model="formstep">
 
         <v-stepper-header>
 
@@ -26,7 +26,7 @@
                 </v-row>
                 <v-row justify="center" align="center">
 
-                    <v-col cols="12" lg="8" md="8" sm="12">
+                    <v-col cols="12" lg="12" md="12" sm="12">
 
                         <v-form justify="center" align="center">
 
@@ -45,7 +45,7 @@
 
                 </v-row>
 
-                <v-btn color="primary" @click="formstep = 2" :disabled="packageSelection == null">Weiter</v-btn>
+                <v-btn block color="primary" @click="formstep = 2" :disabled="packageSelection == null">Weiter</v-btn>
 
             </v-stepper-content>
 
@@ -62,7 +62,7 @@
 
                 <v-row justify="center" align="center">
 
-                    <v-col cols="12" lg="8" md="8" sm="12">
+                    <v-col cols="12" lg="12" md="12" sm="12">
 
                         <v-form justify="center" align="center">
 
@@ -82,7 +82,7 @@
 
                 </v-row>
 
-                <v-btn color="primary" @click="formstep = 3">Weiter</v-btn>
+                <v-btn block color="primary" @click="formstep = 3">Weiter</v-btn>
 
             </v-stepper-content>
 
@@ -94,15 +94,15 @@
 
                         <v-col justify="center" align="center">
                             <h2>3. Unser Angebot für Sie</h2>
-                            <div class="mt-12 mb-12 pa-12" style="font-size: 1.25em; font-weight: bolder; background: #0090D6; color: #fff">
-                                <p v-if="packageSelection && extrasSelection">{{packageSelection.packageName}} <br> {{packageSelection.packagePriceMin.toFixed(2)}} bis {{ calculatePriceSpan }}</p>
+                            <div class="mt-12 mb-6 pa-6" style="font-size: 1.25em; font-weight: bolder; background: #0090D6; color: #fff">
+                                <p v-if="packageSelection && extrasSelection">{{packageSelection.packageName}} <br> {{packageSelection.packagePriceMax.toFixed(2)}} € - {{ calculatePriceSpan }} €</p>
                             </div>
                         </v-col>
 
                     </v-row>
 
                     <v-row>
-                        <v-col cols="12" lg="6" md="6" sm="12">
+                        <v-col cols="12" lg="12" md="12" sm="12">
 
                             <h3 class="mb-6">Ihre Auswahl</h3>
 
@@ -125,7 +125,7 @@
 
                         </v-col>
 
-                        <v-col cols="12" lg="6" md="6" sm="12">
+                        <v-col cols="12" lg="12" md="12" sm="12">
 
                             <h3>Wie können wir Sie erreichen?</h3>
 
@@ -168,9 +168,11 @@
 
                                 <span style="font-size: 0.75em;"> Mit * markierte Felder sind Pflichtfelder</span>
 
+                                <v-btn block color="primary" @click="formSendSuccessfully = true" :disabled="!leadInfoIsValid()" style="white-space: normal;
+word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</v-btn>
+
                             </v-form>
 
-                            <v-btn color="primary" @click="formSendSuccessfully = true" :disabled="!leadInfoIsValid()">Mein kostenloses und unverbindliches Angebot anfordern</v-btn>
 
                         </v-col>
 
@@ -248,48 +250,56 @@
                         id: 1,
                         description: 'DSGVO Paket - Ihre rechtliche Absicherung (empfohlen)',
                         price: 19.95,
+                        twoYearPrice: 478.8,
                         priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
                         id: 2,
                         description: 'SSL Zertifikat für sichere Datenübertragung (empfohlen)',
                         price: 9.95,
+                        twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 3,
                         description: 'Regelmäßige Updates und Wartung Ihrer Webseite',
                         price: 19.95,
+                        twoYearPrice: 478.8,
                         priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
                         id: 4,
                         description: 'Erstellung professioneller Praxis- und Teamfotos',
                         price: 400.00,
+                        twoYearPrice: 400.00,
                         priceDisplayed: 'einmalig 400 €'
                     },
                     {
                         id: 5,
                         description: 'Inhaltspflege der Webseite und Umsetzung von Änderungswünschen mit persönlicher Kundenbetreuung',
                         price: 39.95,
+                        twoYearPrice: 958.8,
                         priceDisplayed: 'mtl. 39.95 €'
                     },
                     {
                         id: 6,
                         description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z.B. Google',
                         price: 9.95,
+                        twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 7,
                         description: 'Sprachassistenten optimierte Webseitenerstellung und Yelp Eintrag ',
                         price: 9.95,
+                        twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 8,
                         description: 'Online Rezept und Online Überweisung für Ihre Patienten',
                         price: 9.95,
+                        twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     }
                 ],
@@ -324,7 +334,7 @@
 
                     let extrasSum = 0;
                     this.extrasSelection.forEach( (extra) => {
-                        extrasSum += extra.price;
+                        extrasSum += extra.twoYearPrice;
                     });
 
                     maxPrice = (this.packageSelection.packagePriceMax+extrasSum).toFixed(2);
@@ -339,6 +349,11 @@
 </script>
 
 <style>
+
+    #stepper {
+        max-height: 500px;
+        overflow-y: scroll;
+    }
     input[type="radio"], input[type="checkbox"] {
         display: none;
     }
@@ -354,16 +369,18 @@
     .description-label {
         padding: 1em;
         display: block;
+        font-size: 0.85em;
         min-height: 100%; /* for the latest browsers which support min-height */
         height: auto !important; /* for newer IE versions */
         height: 100%; /* the only height-related attribute that IE6 does not ignore  */
+        max-height: 200px;
     }
 
     .active {
         border: 1px solid #fff;
         background: #0090D6;
         color: #fff;
-        font-weight: bold;
+        /* font-weight: bold; */
         width: 100%;
         min-height: 150px;
     }
