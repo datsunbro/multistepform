@@ -348,15 +348,24 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
     }
 </script>
 
-<style>
+<style lang="scss" scoped>
 
-    #stepper {
-        max-height: 500px;
-        overflow-y: scroll;
+    @import "https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900";
+    @import "https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css";
+
+    .v-stepper, .v-stepper__header {
+        box-shadow: none !important;
     }
+
     input[type="radio"], input[type="checkbox"] {
-        display: none;
+        /* display: none; */
+        visibility: hidden;
     }
+
+    .v-input >>> input{
+        border-style: none!important;
+    }
+
     .descript {
         border: 1px solid #0090D6;
         background: #fff;
@@ -367,13 +376,15 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
     }
 
     .description-label {
-        padding: 1em;
         display: block;
-        font-size: 0.85em;
+        font-size: 0.95em;
         min-height: 100%; /* for the latest browsers which support min-height */
         height: auto !important; /* for newer IE versions */
-        height: 100%; /* the only height-related attribute that IE6 does not ignore  */
-        max-height: 200px;
+        /* Following stuff is needed to vertically "center" the contents */
+        position: relative;
+        top: 75%;
+        left:50%;
+        transform: translate(-50%,-50%);
     }
 
     .active {
@@ -386,3 +397,5 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
     }
 
 </style>
+
+<style scoped src="vuetify/dist/vuetify.min.css"></style>
