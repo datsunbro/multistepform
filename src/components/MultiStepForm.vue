@@ -168,7 +168,7 @@
 
                                 <span style="font-size: 0.75em;"> Mit * markierte Felder sind Pflichtfelder</span>
 
-                                <v-btn block color="primary" @click="formSendSuccessfully = true" :disabled="!leadInfoIsValid()" style="white-space: normal;
+                                <v-btn block color="primary" @click="sendLeadInfo" :disabled="!leadInfoIsValid()" style="white-space: normal;
 word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</v-btn>
 
                             </v-form>
@@ -203,11 +203,16 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         name: "MultiStepForm",
         methods: {
             leadInfoIsValid() {
-                if( !this.leadInfos.contactMail || !this.leadInfos.contactPhone || !this.leadInfos.practiceName || !this.leadInfos.contactName || !this.leadInfos.city ) {
+                if ( !this.leadInfos.contactMail || !this.leadInfos.contactPhone || !this.leadInfos.practiceName || !this.leadInfos.contactName || !this.leadInfos.city ) {
                     return false;
                 } else {
                     return true;
                 }
+            },
+            sendLeadInfo() {
+
+                this.formSendSuccessfully = true;
+                return true;
             }
         },
         data () {
