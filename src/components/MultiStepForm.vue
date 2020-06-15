@@ -10,7 +10,7 @@
             <v-stepper-step :complete="formstep > 2" step="2">Besonderheiten/Was soll berücksichtigt werden?</v-stepper-step>
             <v-divider></v-divider>
 
-            <v-stepper-step step="3" :complete="formSendSuccessfully">Ihr individuelles Angebot</v-stepper-step>
+            <v-stepper-step step="3" :complete="formSentSuccessfully">Ihr individuelles Angebot</v-stepper-step>
 
         </v-stepper-header>
 
@@ -88,13 +88,13 @@
 
             <v-stepper-content step="3">
 
-                <div v-if="!formSendSuccessfully">
+                <div v-if="!formSent">
 
                     <v-row justify="center" align="center">
 
                         <v-col justify="center" align="center">
                             <h2>3. Unser Angebot für Sie</h2>
-                            <div class="mt-12 mb-6 pa-6" style="font-size: 1.25em; font-weight: bolder; background: #0090D6; color: #fff">
+                            <div id="offerbox" class="mt-12 mb-6 pa-6">
                                 <p v-if="packageSelection && extrasSelection">{{packageSelection.packageName}} <br> {{packageSelection.packagePriceMax.toFixed(2)}} € - {{ calculatePriceSpan }} €</p>
                             </div>
                         </v-col>
@@ -147,7 +147,7 @@
 
                                 <v-text-field
                                         v-model="leadInfos.city"
-                                        label="Ort*"
+                                        label="PLZ & Ort*"
                                         :rules="generalRules"
                                         required
                                 ></v-text-field>
@@ -162,18 +162,33 @@
                                 <v-text-field
                                         v-model="leadInfos.contactPhone"
                                         label="Tel*"
-                                        :rules="generalRules"
+                                        :rules="phoneRules"
                                         required
                                 ></v-text-field>
 
                                 <span style="font-size: 0.75em;"> Mit * markierte Felder sind Pflichtfelder</span>
 
-                                <v-btn block color="primary" @click="formSendSuccessfully = true" :disabled="!leadInfoIsValid()" style="white-space: normal;
+                                <v-btn block color="primary" @click="sendLeadInfo" :disabled="!leadInfoIsValid()" style="white-space: normal;
 word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</v-btn>
 
                             </v-form>
 
+                        </v-col>
 
+                    </v-row>
+
+                </div>
+
+                <div v-else-if="formSent && formSentSuccessfully">
+
+                    <v-row>
+
+                        <v-col justify="center" align="center" style="margin-top: 80px;">
+                            <v-icon x-large color="#87BF34">check_circle_outline</v-icon>
+                            <br/><br/>
+                            <h1>Vielen Dank für Ihre Anfrage!</h1>
+                            <p>Ein Mitarbeiter unseres Teams, wird sich zeitnah mit Ihnen in Verbindung setzen.</p>
+                            <p>Ihr Arzttermine.de - Team</p>
                         </v-col>
 
                     </v-row>
@@ -184,9 +199,11 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
 
                     <v-row>
 
-                        <v-col justify="center" align="center">
-                            <h1>Vielen Dank für Ihre Anfrage!</h1>
-                            <p>Ein Mitarbeiter unseres Teams, wird sich zeitnah mit Ihnen in Verbindung setzen.</p>
+                        <v-col justify="center" align="center" style="margin-top: 80px;">
+                            <v-icon x-large color="red">error_outline</v-icon>
+                            <br/><br/>
+                            <h1>Fehler beim Senden der Anfrage!</h1>
+                            <p>Leider konnte Ihre Anfrage nicht verarbeitet werden!<br/>Bitte versuchen Sie es erneut, oder wenden Sie sich direkt an unseren kostenlosen Kundensupport unter:<br/> <a href="tel:08002222133" style="font-size: 1.25em;">0800 22 22 133</a>.</p>
                             <p>Ihr Arzttermine.de - Team</p>
                         </v-col>
 
@@ -199,17 +216,9 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
 </template>
 
 <script>
+    import axios from "axios";
     export default {
         name: "MultiStepForm",
-        methods: {
-            leadInfoIsValid() {
-                if( !this.leadInfos.contactMail || !this.leadInfos.contactPhone || !this.leadInfos.practiceName || !this.leadInfos.contactName || !this.leadInfos.city ) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        },
         data () {
             return {
                 formstep: 1,
@@ -311,6 +320,7 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
                     contactMail:null,
                     contactPhone:null
                 },
+                leadInfoErrors: false,
                 generalRules: [
                     v => !!v || 'Bitte füllen Sie dieses Feld aus!'
                 ],
@@ -318,12 +328,59 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
                     v => !!v || 'Bitte füllen Sie dieses Feld aus!',
                     v => /.+@.+/.test(v) || 'Bitte geben Sie eine gültige E-Mailadresse an',
                 ],
-                formSendSuccessfully: false,
+                phoneRules: [
+                    v => !!v || 'Bitte füllen Sie dieses Feld aus!',
+                    v => (!!v && v.length > 5 && v.length < 17) ||'Bitte geben Sie eine gültige Telefonnumer an!',
+                ],
+                formSent: false,
+                formSentSuccessfully: false,
                 checkIfExtraIsSelected(option) {
                     if( this.extrasSelection.indexOf(option) >= 0 ) {
                         return true;
                     }
                 }
+            }
+        },
+        methods: {
+            leadInfoIsValid() {
+                return this.leadInfos.valid;
+            },
+            sendLeadInfo() {
+                const packageSelected = { packageName: this.packageSelection.packageName };
+
+                let extrasSelected = [];
+
+                this.extrasSelection.forEach( (extra) => {
+                    const extraInfo = {
+                        extraName: extra.description,
+                        price: extra.priceDisplayed
+                    };
+
+                    extrasSelected.push(extraInfo);
+                })
+
+                const contactInfo = {
+                    city: this.leadInfos.city,
+                    mail: this.leadInfos.contactMail,
+                    phone: this.leadInfos.contactPhone,
+                    contactName: this.leadInfos.contactName,
+                    practiceName: this.leadInfos.practiceName
+                };
+
+                const leadInformation = { packageSelected, extrasSelected, contactInfo };
+
+                axios.post('http://mein-invita.atweb.arzttermine.de/lead.php', leadInformation, { headers: { 'Content-Type':'application/json' } } )
+                    .then( response => {
+                        if(response.status == 200 && response.data.data == "Success"){
+                            this.formSent = true;
+                            this.formSentSuccessfully = true;
+                        }
+                    })
+                    .catch( error => {
+                        console.log(error);
+                        this.formSent = true;
+                    })
+                return true;
             }
         },
         computed: {
@@ -351,7 +408,10 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
 <style lang="scss" scoped>
 
     @import "https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900";
+    @import "https://fonts.googleapis.com/css?family=Material+Icons";
     @import "https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css";
+
+    $mainColor: #005d70;
 
     .v-stepper, .v-stepper__header {
         box-shadow: none !important;
@@ -367,9 +427,9 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
     }
 
     .descript {
-        border: 1px solid #0090D6;
+        border: 1px solid $mainColor;
         background: #fff;
-        color: #0090D6;
+        color: $mainColor;
         width: 100%;
         min-height: 150px;
         height: 100%;
@@ -389,11 +449,18 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
 
     .active {
         border: 1px solid #fff;
-        background: #0090D6;
+        background: $mainColor;
         color: #fff;
         /* font-weight: bold; */
         width: 100%;
         min-height: 150px;
+    }
+
+    #offerbox {
+        font-size: 1.25em;
+        font-weight: bolder;
+        background: $mainColor;
+        color: #fff
     }
 
 </style>
