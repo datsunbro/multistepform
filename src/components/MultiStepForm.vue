@@ -3,14 +3,14 @@
 
         <v-stepper-header>
 
-            <v-stepper-step :complete="formstep > 1" step="1">Ihre Ziele</v-stepper-step>
+            <v-stepper-step :complete="formstep > 1" step="1" :editable="editable">Ihre Ziele</v-stepper-step>
 
             <v-divider></v-divider>
 
-            <v-stepper-step :complete="formstep > 2" step="2">Besonderheiten/Was soll berücksichtigt werden?</v-stepper-step>
+            <v-stepper-step :complete="formstep > 2" step="2" :editable="editable">Besonderheiten/Was soll berücksichtigt werden?</v-stepper-step>
             <v-divider></v-divider>
 
-            <v-stepper-step step="3" :complete="formSentSuccessfully">Ihr individuelles Angebot</v-stepper-step>
+            <v-stepper-step step="3" :complete="formSentSuccessfully" :editable="packageSelection">Ihr individuelles Angebot</v-stepper-step>
 
         </v-stepper-header>
 
@@ -20,7 +20,7 @@
 
                 <v-row>
                     <v-col>
-                        <h2>1.	Was ist Ihr Hauptziel mit Ihrer neuen Webseite?</h2>
+                        <h2>1.	Was ist Ihr Hauptziel mit Ihrer neuen Website?</h2>
                     </v-col>
 
                 </v-row>
@@ -79,10 +79,11 @@
                         </v-form>
 
                     </v-col>
+                    <div v-if="packageSelection == null" id="missing-step-one-warning">Um fortzufahren, wählen Sie in Schritt 1 bitte ein Ziel!</div>
 
                 </v-row>
 
-                <v-btn block color="primary" @click="formstep = 3">Weiter</v-btn>
+                <v-btn block color="primary" :disabled="packageSelection == null" @click="formstep = 3">Weiter</v-btn>
 
             </v-stepper-content>
 
@@ -95,7 +96,7 @@
                         <v-col justify="center" align="center">
                             <h2>3. Unser Angebot für Sie</h2>
                             <div id="offerbox" class="mt-12 mb-6 pa-6">
-                                <p v-if="packageSelection && extrasSelection">{{packageSelection.packageName}} <br> {{packageSelection.packagePriceMax.toFixed(2)}} € - {{ calculatePriceSpan }} €</p>
+                                <p v-if="packageSelection && extrasSelection">Wir empfehlen Ihnen unser<br><span style="font-size: 1.5em; font-weight: bold;">{{packageSelection.packageName}}</span><br>ca. {{packageSelection.packagePriceMin.toFixed(2)}} € - {{ calculatePriceSpan }} €</p>
                             </div>
                         </v-col>
 
@@ -112,14 +113,14 @@
                             </div>
 
                             <div v-if="extrasSelection.length > 0" class="mb-5">
-                                <h4>Gewählte Zubuchoptionen:</h4>
+                                <h4>Gewählte Zubuchungsoptionen:</h4>
                                 <ul v-for="extra in extrasSelection" :key="extra.id">
                                     <li>{{extra.description}} - {{extra.priceDisplayed}}</li>
                                 </ul>
                             </div>
 
                             <div v-else>
-                                <h4>Gewählte Zubuchoptionen:</h4>
+                                <h4>Gewählte Zubuchungsoptionen:</h4>
                                 <p>Keine Zubuchoptionen gewählt.</p>
                             </div>
 
@@ -221,92 +222,93 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         name: "MultiStepForm",
         data () {
             return {
+                editable: true,
                 formstep: 1,
                 packageSelection: null,
                 extrasSelection: [],
                 availablePackages: [
                     {
                         id: 1,
-                        packageName: 'Website Paket L',
-                        packagePriceMin: 6552.00,
-                        packagePriceMax: 7781.00,
-                        description: 'Ich bin gerne auf dem neuesten Stand der Technik und möchte Praxisprozesse effizienter gestalten'
+                        packageName: 'Website Paket Plus',
+                        packagePriceMin: 7781.00,
+                        packagePriceMax: 8950.00, // Minpreis + 15%
+                        description: 'Ich bin gerne auf dem neuesten Stand der Technik und möchte Praxisprozesse effizienter gestalten.'
                     },
                     {
                         id: 2,
-                        packageName: 'Website Paket L',
-                        packagePriceMin: 6552.00,
-                        packagePriceMax: 7781.00,
-                        description: 'Ich möchte meine Patienten mit relevanten Informationen über die Praxis versorgen und Neupatienten von unseren Leistungen überzeugen'
+                        packageName: 'Website Paket Plus',
+                        packagePriceMin: 7781.00,
+                        packagePriceMax: 8950.00, // Minpreis + 15%
+                        description: 'Ich möchte meine Patienten mit relevanten Informationen über die Praxis versorgen und Neupatienten von unseren Leistungen überzeugen.'
                     },
                     {
                         id: 3,
-                        packageName: 'Website Paket L',
-                        packagePriceMin: 6552.00,
-                        packagePriceMax: 7781.00,
-                        description: 'Ich möchte meine Webseite als wichtigstes Marketinginstrument nutzen und Patienten abholen, wo sie suchen'
+                        packageName: 'Website Paket Plus',
+                        packagePriceMin: 7781.00,
+                        packagePriceMax: 8950.00, // Minpreis + 15%
+                        description: 'Ich möchte meine Website als wichtigstes Marketinginstrument nutzen und Patienten abholen, wo sie suchen.'
                     },
                     {
                         id: 4,
-                        packageName: 'Website Paket M',
-                        packagePriceMin: 2865.00,
-                        packagePriceMax: 3392.00,
-                        description: 'Eine Webseite gehört mittlerweile einfach zum Standardrepertoire'
+                        packageName: 'Website Paket Basic',
+                        packagePriceMin: 3392.00,
+                        packagePriceMax: 3900.00, // Minpreis + 15%
+                        description: 'Eine Website gehört mittlerweile einfach zum Standardrepertoire.'
                     }
                 ],
                 availableExtras: [
                     {
                         id: 1,
-                        description: 'DSGVO Paket - Ihre rechtliche Absicherung (empfohlen)',
+                        description: 'DSGVO Paket - Ihre rechtliche Absicherung (empfohlen).',
                         price: 19.95,
                         twoYearPrice: 478.8,
                         priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
                         id: 2,
-                        description: 'SSL Zertifikat für sichere Datenübertragung (empfohlen)',
+                        description: 'SSL Zertifikat für sichere Datenübertragung (empfohlen).',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 3,
-                        description: 'Regelmäßige Updates und Wartung Ihrer Webseite',
+                        description: 'Regelmäßige Updates und Wartung Ihrer Website.',
                         price: 19.95,
                         twoYearPrice: 478.8,
                         priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
                         id: 4,
-                        description: 'Erstellung professioneller Praxis- und Teamfotos',
+                        description: 'Erstellung professioneller Praxis- und Teamfotos.',
                         price: 400.00,
                         twoYearPrice: 400.00,
                         priceDisplayed: 'einmalig 400 €'
                     },
                     {
                         id: 5,
-                        description: 'Inhaltspflege der Webseite und Umsetzung von Änderungswünschen mit persönlicher Kundenbetreuung',
+                        description: 'Inhaltspflege der Website und Umsetzung von Änderungswünschen mit persönlicher Kundenbetreuung.',
                         price: 39.95,
                         twoYearPrice: 958.8,
                         priceDisplayed: 'mtl. 39.95 €'
                     },
                     {
                         id: 6,
-                        description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z.B. Google',
+                        description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z.B. Google.',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 7,
-                        description: 'Sprachassistenten optimierte Webseitenerstellung und Yelp Eintrag ',
+                        description: 'Sprachassistenten optimierte Website-Erstellung und Yelp Eintrag.',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 8,
-                        description: 'Online Rezept und Online Überweisung für Ihre Patienten',
+                        description: 'Online Rezept und Online Überweisung für Ihre Patienten.',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
@@ -326,7 +328,7 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
                 ],
                 emailRules: [
                     v => !!v || 'Bitte füllen Sie dieses Feld aus!',
-                    v => /.+@.+/.test(v) || 'Bitte geben Sie eine gültige E-Mailadresse an',
+                    v => /.+@.+/.test(v) || 'Bitte geben Sie eine gültige E-Mailadresse an!',
                 ],
                 phoneRules: [
                     v => !!v || 'Bitte füllen Sie dieses Feld aus!',
@@ -413,6 +415,10 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
 
     $mainColor: #005d70;
 
+    #invita-configurator > h2 {
+        font-size: 24px!important;
+    }
+
     .v-stepper, .v-stepper__header {
         box-shadow: none !important;
     }
@@ -422,7 +428,7 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         visibility: hidden;
     }
 
-    .v-input >>> input{
+    .v-input >>> input {
         border-style: none!important;
     }
 
@@ -442,6 +448,7 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         height: auto !important; /* for newer IE versions */
         /* Following stuff is needed to vertically "center" the contents */
         position: relative;
+        padding: 0 10px;
         top: 75%;
         left:50%;
         transform: translate(-50%,-50%);
@@ -454,6 +461,15 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         /* font-weight: bold; */
         width: 100%;
         min-height: 150px;
+    }
+
+    #missing-step-one-warning{
+        width: 100%;
+        font-size:1.15em;
+        color: #ffffff;
+        padding: 10px;
+        margin-bottom: 25px;
+        background: red;
     }
 
     #offerbox {
