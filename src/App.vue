@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app id="invita-configurator">
     <v-content>
       <MultiStepForm />
     </v-content>
@@ -11,11 +11,9 @@
 
   export default {
     name: 'App',
-
     components: {
       MultiStepForm,
     },
-
     data: () => ({
       //
     }),
