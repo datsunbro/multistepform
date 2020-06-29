@@ -167,6 +167,12 @@
                                         required
                                 ></v-text-field>
 
+                                <v-checkbox v-model="dsgvoAccepted">
+                                    <template v-slot:label>
+                                        <div>Ich habe die &nbsp; <a target="_blank" href="http://mein-invita.de/datenschutzerklaerung">Datenschutzbestimmungen</a> gelesen und akzeptiere diese.</div>
+                                    </template>
+                                </v-checkbox>
+
                                 <span style="font-size: 0.75em;"> Mit * markierte Felder sind Pflichtfelder</span>
 
                                 <v-btn block color="primary" @click="sendLeadInfo" :disabled="!leadInfoIsValid()" style="white-space: normal;
@@ -322,6 +328,7 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
                     contactMail:null,
                     contactPhone:null
                 },
+                dsgvoAccepted: false,
                 leadInfoErrors: false,
                 generalRules: [
                     v => !!v || 'Bitte füllen Sie dieses Feld aus!'
@@ -345,6 +352,9 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         },
         methods: {
             leadInfoIsValid() {
+                if(!this.dsgvoAccepted){
+                    return false;
+                }
                 return this.leadInfos.valid;
             },
             sendLeadInfo() {
