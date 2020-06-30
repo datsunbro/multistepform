@@ -20,7 +20,7 @@
 
                 <v-row>
                     <v-col>
-                        <h2>1.	Was ist Ihr Hauptziel mit Ihrer neuen Website?</h2>
+                        <h2>1. Was ist Ihr Hauptziel mit Ihrer neuen Website?</h2>
                     </v-col>
 
                 </v-row>
@@ -45,7 +45,7 @@
 
                 </v-row>
 
-                <v-btn block color="primary" @click="formstep = 2" :disabled="packageSelection == null">Weiter</v-btn>
+                <v-btn v-bind="size" block color="primary" @click="formstep = 2" :disabled="packageSelection == null">Weiter</v-btn>
 
             </v-stepper-content>
 
@@ -54,7 +54,7 @@
                 <v-row>
 
                     <v-col>
-                        <h2>2.Was ist für Sie noch wichtig? Was soll berücksichtigt werden?</h2>
+                        <h2>2. Was ist für Sie noch wichtig? Was soll berücksichtigt werden?</h2>
                         <p>Mehrfachauswahl möglich</p>
                     </v-col>
 
@@ -69,7 +69,7 @@
                             <v-row>
                                 <v-col cols="12" lg="3" v-for="option in availableExtras" :key="option.id">
                                     <div class="descript" :class="{active: checkIfExtraIsSelected(option)}">
-                                        <label :for="'extra'+option.id" class="description-label">{{option.description}}
+                                        <label :for="'extra'+option.id" class="description-label-step-two">{{option.description}}
                                             <input type="checkbox" :name="'extra'+option.id" :id="'extra'+option.id" :value="option" v-model="extrasSelection">
                                         </label>
                                     </div>
@@ -83,7 +83,7 @@
 
                 </v-row>
 
-                <v-btn block color="primary" :disabled="packageSelection == null" @click="formstep = 3">Weiter</v-btn>
+                <v-btn v-bind="size" block color="primary" :disabled="packageSelection == null" @click="formstep = 3">Weiter</v-btn>
 
             </v-stepper-content>
 
@@ -175,8 +175,7 @@
 
                                 <span style="font-size: 0.75em;"> Mit * markierte Felder sind Pflichtfelder</span>
 
-                                <v-btn block color="primary" @click="sendLeadInfo" :disabled="!leadInfoIsValid()" style="white-space: normal;
-word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</v-btn>
+                                <v-btn id="formsend-button" v-bind="size" block color="primary" @click="sendLeadInfo" :disabled="!leadInfoIsValid()" href="#konfigurator">Mein kostenloses und unverbindliches Angebot anfordern</v-btn>
 
                             </v-form>
 
@@ -265,56 +264,56 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
                 availableExtras: [
                     {
                         id: 1,
-                        description: 'DSGVO Paket - Ihre rechtliche Absicherung (empfohlen).',
+                        description: 'DSGVO Paket - Ihre rechtliche Absicherung (empfohlen)',
                         price: 19.95,
                         twoYearPrice: 478.8,
                         priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
                         id: 2,
-                        description: 'SSL Zertifikat für sichere Datenübertragung (empfohlen).',
+                        description: 'SSL Zertifikat für sichere Datenübertragung (empfohlen)',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 3,
-                        description: 'Regelmäßige Updates und Wartung Ihrer Website.',
+                        description: 'Regelmäßige Updates und Wartung Ihrer Website',
                         price: 19.95,
                         twoYearPrice: 478.8,
                         priceDisplayed: 'mtl. 19.95 €'
                     },
                     {
                         id: 4,
-                        description: 'Erstellung professioneller Praxis- und Teamfotos.',
+                        description: 'Erstellung professioneller Praxis- und Teamfotos',
                         price: 400.00,
                         twoYearPrice: 400.00,
                         priceDisplayed: 'einmalig 400 €'
                     },
                     {
                         id: 5,
-                        description: 'Inhaltspflege der Website und Umsetzung von Änderungswünschen mit persönlicher Kundenbetreuung.',
+                        description: 'Inhaltspflege der Website und Umsetzung von Änderungswünschen mit persönlicher Kundenbetreuung',
                         price: 39.95,
                         twoYearPrice: 958.8,
                         priceDisplayed: 'mtl. 39.95 €'
                     },
                     {
                         id: 6,
-                        description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z.B. Google.',
+                        description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z. B. Google',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 7,
-                        description: 'Sprachassistenten optimierte Website-Erstellung und Yelp Eintrag.',
+                        description: 'Sprachassistentenoptimierte Website-Erstellung und Yelp Eintrag',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
                         id: 8,
-                        description: 'Online Rezept und Online Überweisung für Ihre Patienten.',
+                        description: 'Online Rezept und Online Überweisung für Ihre Patienten',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
@@ -381,7 +380,7 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
 
                 const leadInformation = { packageSelected, extrasSelected, contactInfo };
 
-                axios.post('http://mein-invita.atweb.arzttermine.de/lead.php', leadInformation, { headers: { 'Content-Type':'application/json' } } )
+                axios.post('https://mein-invita.de/lead.php', leadInformation, { headers: { 'Content-Type':'application/json' } } )
                     .then( response => {
                         if(response.status == 200 && response.data.data == "Success"){
                             this.formSent = true;
@@ -412,6 +411,10 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
                 } else {
                     return this.packageSelection.packagePriceMax.toFixed(2);
                 }
+            },
+            size() {
+                const size = {xs:'small',sm:'medium',lg:'large',xl:'x-large'}[this.$vuetify.breakpoint.name];
+                return size ? { [size]: true } : {}
             }
         }
     }
@@ -436,6 +439,7 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
     input[type="radio"], input[type="checkbox"] {
         /* display: none; */
         visibility: hidden;
+        display: block;
     }
 
     .v-input >>> input {
@@ -464,6 +468,19 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         transform: translate(-50%,-50%);
     }
 
+    .description-label-step-two {
+        display: block;
+        font-size: 0.95em;
+        min-height: 100%; /* for the latest browsers which support min-height */
+        height: auto !important; /* for newer IE versions */
+        /* Following stuff is needed to vertically "center" the contents */
+        position: relative;
+        padding: 0 10px;
+        top: 75%;
+        left:50%;
+        transform: translate(-50%,-42%);
+    }
+
     .active {
         border: 1px solid #fff;
         background: $mainColor;
@@ -487,6 +504,19 @@ word-wrap: break-word;">Mein kostenloses und unverbindliches Angebot anfordern</
         font-weight: bolder;
         background: $mainColor;
         color: #fff
+    }
+
+    #formsend-button {
+        // display: block;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+    @media (max-width: 500px) {
+        #formsend-button {
+            display: block;
+            white-space: normal;
+            word-wrap: break-word;
+        }
     }
 
 </style>
