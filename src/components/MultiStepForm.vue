@@ -67,7 +67,7 @@
                         <v-form justify="center" align="center">
 
                             <v-row>
-                                <v-col cols="12" lg="3" v-for="option in availableExtras" :key="option.id">
+                                <v-col cols="12" lg="4" v-for="option in availableExtras" :key="option.id">
                                     <div class="descript" :class="{active: checkIfExtraIsSelected(option)}">
                                         <label :for="'extra'+option.id" class="description-label-step-two">{{option.description}}
                                             <input type="checkbox" :name="'extra'+option.id" :id="'extra'+option.id" :value="option" v-model="extrasSelection">
@@ -287,7 +287,7 @@
                         id: 4,
                         description: 'Erstellung professioneller Praxis- und Teamfotos',
                         price: 400.00,
-                        twoYearPrice: 400.00,
+                        twoYearPrice: 400.0,
                         priceDisplayed: 'einmalig 400 €'
                     },
                     {
@@ -299,20 +299,27 @@
                     },
                     {
                         id: 6,
-                        description: 'Steigerung der Auffindbarkeit in Suchmaschinen wie z. B. Google',
+                        description: 'erweiterter SEO-Check (Suchmaschinenoptimierung)',
                         price: 9.95,
-                        twoYearPrice: 238.8,
-                        priceDisplayed: 'mtl. 9.95 €'
+                        twoYearPrice: 399.0,
+                        priceDisplayed: 'einmalig 399.00 €'
                     },
                     {
                         id: 7,
+                        description: 'SEA-Betreuung (Suchmaschinenwerbung)',
+                        price: 9.95,
+                        twoYearPrice: 499.0,
+                        priceDisplayed: 'einmalig 499.00 €'
+                    },
+                    {
+                        id: 8,
                         description: 'Sprachassistentenoptimierte Website-Erstellung und Yelp Eintrag',
                         price: 9.95,
                         twoYearPrice: 238.8,
                         priceDisplayed: 'mtl. 9.95 €'
                     },
                     {
-                        id: 8,
+                        id: 9,
                         description: 'Online Rezept und Online Überweisung für Ihre Patienten',
                         price: 9.95,
                         twoYearPrice: 238.8,
@@ -471,14 +478,18 @@
     .description-label-step-two {
         display: block;
         font-size: 0.95em;
-        min-height: 100%; /* for the latest browsers which support min-height */
+        min-height: 80%; /* for the latest browsers which support min-height */
         height: auto !important; /* for newer IE versions */
         /* Following stuff is needed to vertically "center" the contents */
         position: relative;
         padding: 0 10px;
         top: 75%;
         left:50%;
-        transform: translate(-50%,-42%);
+        transform: translate(-50%,-50%);
+    }
+
+    #invita-configurator {
+        display: -webkit-box;
     }
 
     .active {
@@ -511,6 +522,7 @@
         white-space: normal;
         word-wrap: break-word;
     }
+
     @media (max-width: 500px) {
         #formsend-button {
             display: block;
